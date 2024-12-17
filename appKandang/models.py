@@ -12,7 +12,7 @@ class KandangAyam(models.Model):
 
 
 class Ayam(models.Model):
-    jenis = models.CharField(max_length=50)
+    jenis = models.CharField(max_length=50, choices=[('petelur', 'Petelur'), ('pedaging', 'Pedaging')])
     usia = models.IntegerField()
     kandang = models.ForeignKey(
         KandangAyam,
