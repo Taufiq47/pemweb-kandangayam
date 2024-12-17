@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+    <div class="w-fit flex flex-col gap-4 p-8 rounded-lg m-auto">
+        <div class="flex flex-col gap-2">
+            <h1 class="text-xl font-bold text-gray-800 bg-gray-100 w-full text-center py-5 shadow-md rounded-lg">
+                Daftar Ayam di Kandang: {{ kandang.nama_kandang }}
+            </h1>
+            <form method="GET" class="flex flex-row gap-4 items-center">
+                <div>
+                    <label for="jenis" class="block text-gray-700 font-semibold">Jenis Ayam:</label>
+                    <select name="jenis" id="jenis" class="border rounded-md p-2">
+                        <option value="">Semua</option>
+                        <option value="Petelur" {% if request.GET.jenis == "Petelur" %}selected{% endif %}>Petelur
+                        </option>
+                        <option value="Pedaging" {% if request.GET.jenis == "Pedaging" %}selected{% endif %}>Pedaging
+                        </option>
+                    </select>
+                </div>
+                <div>
+                    <label for="usia_min" class="block text-gray-700 font-semibold">Usia Min:</label>
+                    <input type="number" name="usia_min" id="usia_min" class="border rounded-md p-2"
+                        value="{{ request.GET.usia_min }}">
+                </div>
+                <div>
+                    <label for="usia_max" class="block text-gray-700 font-semibold">Usia Max:</label>
+                    <input type="number" name="usia_max" id="usia_max" class="border rounded-md p-2"
+                        value="{{ request.GET.usia_max }}">
+                </div>
+                <div class="self-end">
+                    <button type="submit"
+                        class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 cursor-pointer transition duration-300">
+                        Filter
+                    </button>
+                </div>
+                <div class="flex self-end">
+                    <a href="{% url 'index' %}"
+                        class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 cursor-pointer transition duration-300">
+                        Kembali ke Daftar Kandang
+                    </a>
+                </div>
+            </form>
+            <div class="mt-2 text-gray-600 bg-white-100 min-h-[520px] rounded-lg shadow-md p-4 bg-gray-100">
+                {% if list_ayam %}
+                <div class="grid grid-cols-3 gap-4 h-fit w-full">
+                    {% for ayam in list_ayam %}
+                    <div
+                        class="bg-yellow-100 h-auto p-4 rounded-md shadow-md hover:shadow-lg transition-shadow duration-300">
+                        <h3 class="font-bold text-gray-700 text-lg mb-2">{{ ayam.jenis }}</h3>
+                        <p class="text-gray-600">Usia: {{ ayam.usia }} bulan</p>
+                        <form method="POST" action="{% url 'hapus_ayam' ayam.id %}">
+                            {% csrf_token %}
+                            <button type="submit"
+                                class="bg-red-500 text-white px-4 py-1 rounded-md hover:bg-red-600 cursor-pointer transition duration-300 mt-4">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="col-span-3 text-center text-gray-600">
+                    <p>Tidak ada data ayam sesuai filter.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
