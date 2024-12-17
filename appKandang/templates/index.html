@@ -1,0 +1,133 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+    <div class="w-fit flex flex-row gap-4 p-8 rounded-lg m-auto">
+        <div class="flex flex-col gap-4">
+            <h1 class="text-xl font-bold text-gray-800 bg-gray-100 w-[700px] text-center py-5 shadow-md rounded-lg">
+                Daftar Kandang</h1>
+            <div class="mt-2 text-gray-600 bg-white-100 min-h-[520px] rounded-lg shadow-md p-4 bg-gray-100">
+                <div class="grid grid-cols-3 gap-4 h-fit w-full">
+                    {% for kandang in kandang_list %}
+                    <div
+                        class="bg-green-100 h-auto p-4 rounded-md shadow-md hover:shadow-lg transition-shadow duration-300">
+                        <h3 class="font-bold text-gray-700 text-lg mb-2">{{ kandang.nama_kandang }}</h3>
+                        <p class="text-gray-600">Kapasitas: {{ kandang.kapasitas }}</p>
+                        <p class="text-gray-600 mb-4">Jumlah Ayam: {{ kandang.jumlah_ayam }}</p>
+                        <!-- Tombol Edit dan Hapus -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <a href="{% url 'edit_kandang' kandang.id %}"
+                                class="bg-blue-500 text-white px-4 py-1 rounded-md hover:bg-blue-600 cursor-pointer transition duration-300">
+                                Edit
+                            </a>
+                            <form action="{% url 'hapus_kandang' kandang.id %}" method="post" class="inline">
+                                {% csrf_token %}
+                                <button type="submit"
+                                    class="bg-red-500 text-white px-4 py-1 rounded-md hover:bg-red-600 cursor-pointer transition duration-300 w-full">
+                                    Hapus
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-span-3 text-center text-gray-600">
+                        <p>Tidak ada data kandang ayam.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="flex flex-col gap-4 justify-between w-[240px]">
+            <div class="h-full bg-gray-100 p-4 rounded-lg shadow-mdr">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">
+                    {% if kandang %}
+                        Edit Kandang
+                    {% else %}
+                        Tambah Kandang
+                    {% endif %}
+                </h3>
+                <form method="POST"
+                    action="{% if kandang %}{% url 'edit_kandang' kandang.id %}{% else %}{% url 'tambah_kandang' %}{% endif %}"
+                    class="space-y-4">
+                    {% csrf_token %}
+                    <div>
+                        <label for="nama-kandang" class="block text-sm font-medium text-gray-700">Nama Kandang</label>
+                        <input type="text" id="nama-kandang" name="nama-kandang"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3"
+                            placeholder="Masukkan nama kandang"
+                            value="{% if kandang %}{{ kandang.nama_kandang }}{% endif %}" required />
+                    </div>
+                    <div>
+                        <label for="kapasitas" class="block text-sm font-medium text-gray-700">Kapasitas</label>
+                        <input type="number" id="kapasitas" name="kapasitas"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3"
+                            placeholder="Masukkan kapasitas" value="{% if kandang %}{{ kandang.kapasitas }}{% endif %}"
+                            required />
+                    </div>
+                    <div class="flex space-x-4">
+                        <button type="submit"
+                            class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                            {% if kandang %}
+                                Simpan
+                            {% else %}
+                                Tambah
+                            {% endif %}
+                        </button>
+
+                        {% if kandang %}
+                        <a href="{% url 'index' %}"
+                            class="w-full bg-red-500 hover:bg-red-600 text-white text-center font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2">
+                            Batal
+                        </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+            <div class="h-full bg-gray-100 p-4 rounded-lg shadow-mdr">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">Tambah Ayam</h3>
+                <form class="space-y-4" method="POST" action="{% url 'tambah_ayam' %}">
+                    {% csrf_token %}
+                    <div>
+                        <label for="jenisAyam" class="block text-sm font-medium text-gray-700">Jenis</label>
+                        <input type="text" id="jenisAyam" name="jenisAyam"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3"
+                            placeholder="Masukkan jenis ayam" required />
+                    </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="col-span-2">
+                            <label for="kandangAyam" class="block text-sm font-medium text-gray-700">Kandang</label>
+                            <select id="kandangAyam" name="kandangAyam"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3"
+                                required>
+                                <option value="">Pilih Kandang</option>
+                                {% for kandang in kandang_list %}
+                                <option value="{{ kandang.id }}" {% if kandang.is_penuh %}disabled{% endif %}>{{
+                                    kandang.nama_kandang }} {% if kandang.is_penuh %}(Penuh){% endif %}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="usia" class="block text-sm font-medium text-gray-700">Usia</label>
+                            <input type="number" id="usia" name="usia"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3"
+                                placeholder="0" required />
+                        </div>
+                    </div>
+                    <button type="submit"
+                        class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        {% if kandang.is_penuh %}disabled{% endif %}>
+                        Tambah
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

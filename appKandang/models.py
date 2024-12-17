@@ -6,6 +6,9 @@ class KandangAyam(models.Model):
 
     def __str__(self):
         return self.nama_kandang
+    
+    def jumlah_ayam(self):
+        return self.ayam.count()
 
 
 class Ayam(models.Model):
