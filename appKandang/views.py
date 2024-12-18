@@ -23,12 +23,15 @@ def detail_kandang(request, kandang_id):
     usia_min = request.GET.get('usia_min')
     usia_max = request.GET.get('usia_max')
 
+    is_petelur = list_ayam.filter(jenis="Petelur")
+    is_pedaging = list_ayam.filter(jenis="Pedaging")
+
     if usia_min:
         list_ayam = list_ayam.filter(usia__gte=int(usia_min))
     if usia_max:
         list_ayam = list_ayam.filter(usia__lte=int(usia_max))
 
-    return render(request, 'pages/daftarAyam.html', {'list_ayam': list_ayam, 'kandang': kandang})
+    return render(request, 'pages/daftarAyam.html', {'list_ayam': list_ayam, 'kandang': kandang, 'pedaging': is_pedaging, 'petelur': is_petelur})
 
 def tambah_edit_kandang(request, kandang_id=None):
     if kandang_id:
@@ -43,12 +46,14 @@ def tambah_edit_kandang(request, kandang_id=None):
         if kandang:
             kandang.nama_kandang = nama_kandang
             kandang.kapasitas = kapasitas
+            pesan = "diperbaharui"
             kandang.save()
         else:
             kandang = KandangAyam(nama_kandang=nama_kandang, kapasitas=kapasitas)
+            pesan = "ditambahkan"
             kandang.save()
         
-        messages.success(request, "Kandang ayam berhasil ditambahkan")
+        messages.success(request, "Kandang ayam berhasil " + pesan)
         return redirect('index')
 
     kandang_list = KandangAyam.objects.all()
@@ -60,6 +65,14 @@ def tambah_ayam(request):
         usia = request.POST.get('usia')
         kandang_id = request.POST.get('kandangAyam')
         jumlah = int(request.POST.get('jumlah', 1))
+        
+        kandang = get_object_or_404(KandangAyam, id=kandang_id)
+
+        totalayamkandang = Ayam.objects.filter(kandang=kandang).count()
+
+        if (jumlah + totalayamkandang) > kandang.kapasitas:
+            messages.error(request, f"Jumlah ayam ({jumlah} ekor) melebihi kapasitas")
+            return redirect('index')
 
         kandang = KandangAyam.objects.get(id=kandang_id)
         for _ in range(jumlah):
@@ -76,6 +89,7 @@ def hapus_kandang(request, kandang_id):
         kandang = get_object_or_404(KandangAyam, id=kandang_id)
 
         kandang.delete()
+        messages.success(request, "Kandang ayam berhasil dihapus")
 
         return redirect('index')
 
@@ -83,4 +97,6 @@ def hapus_ayam(request, ayam_id):
     ayam = get_object_or_404(Ayam, id=ayam_id)
     kandang_id = ayam.kandang.id
     ayam.delete()
+
+    messages.success(request, "Ayam berhasil dihapus")
     return redirect('detail_kandang', kandang_id=kandang_id)
