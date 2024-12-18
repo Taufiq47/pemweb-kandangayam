@@ -18,10 +18,8 @@
                     <label for="jenis" class="block text-gray-700 font-semibold">Jenis Ayam:</label>
                     <select name="jenis" id="jenis" class="border rounded-md p-2">
                         <option value="">Semua</option>
-                        <option value="Petelur" {% if request.GET.jenis == "Petelur" %}selected{% endif %}>Petelur
-                        </option>
-                        <option value="Pedaging" {% if request.GET.jenis == "Pedaging" %}selected{% endif %}>Pedaging
-                        </option>
+                        <option value="Petelur" {% if request.GET.jenis|default:'' == "Petelur" %}selected{% endif %}>Petelur</option>
+                        <option value="Pedaging" {% if request.GET.jenis|default:'' == "Pedaging" %}selected{% endif %}>Pedaging</option>
                     </select>
                 </div>
                 <div>
@@ -49,6 +47,10 @@
             </form>
             <div class="mt-2 text-gray-600 bg-white-100 min-h-[520px] rounded-lg shadow-md p-4 bg-gray-100">
                 {% if list_ayam %}
+                <div class="flex gap-2 mb-4 justify-center w-full">
+                    <p>Jumlah Petelur : {{ petelur|length }}</p>
+                    <p>Jumlah Pedaging : {{ pedaging|length }}</p>
+                </div>
                 <div class="grid grid-cols-3 gap-4 h-fit w-full">
                     {% for ayam in list_ayam %}
                     <div
@@ -71,8 +73,37 @@
                 </div>
                 {% endif %}
             </div>
+            <!-- Alert Msg -->
+            {% for msg in messages %}
+            <div id="alert-{{ forloop.counter }}" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 min-w-[300px] max-w-[955px] flex items-center p-4 mb-4 text-sm text-green-500 border-green-300 bg-green-50 border rounded-lg shadow-lg z-50"
+                role="alert">
+                <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                        d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z" />
+                </svg>
+                <span class="sr-only">Info</span>
+                <div>
+                    <span class="font-medium">Berhasil!</span> {{ msg }}
+                </div>
+            </div>
+            {% endfor %}
         </div>
     </div>
+
+    <script>
+        // Menghilangkan pesan setelah 3 detik menggunakan jQuery
+        $(document).ready(function () {
+            $('[id^="alert-"]').each(function () {
+                const alert = $(this);
+                setTimeout(function () {
+                    alert.fadeOut(300, function () {
+                        alert.remove(); // Menghapus elemen setelah transisi selesai
+                    });
+                }, 3000); // Waktu tunggu 3 detik
+            });
+        });
+    </script>
 </body>
 
 </html>

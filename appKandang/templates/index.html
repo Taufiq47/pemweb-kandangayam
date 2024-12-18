@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.js" integrity="sha512-+k1pnlgt4F1H8L7t3z95o3/KO+o78INEcXTbnoJQ/F2VqDVhWoaiVml/OEHv9HsVgxUaVW+IbiZPUJQfF/YxZw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 
 <body>
@@ -48,15 +49,23 @@
             </div>
             <!-- Alert Msg -->
             {% for msg in messages %}
-            <div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 min-w-[955px] flex items-center p-4 mb-4 text-sm text-green-500 border border-green-300 rounded-lg bg-green-50 z-50"
-            role="alert">
-            <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-            </svg>
-            <span class="sr-only">Info</span>
-            <div>
-                <span class="font-medium">Berhasil!</span> {{ msg }}
-            </div>
+            <div id="alert-{{ forloop.counter }}" class="fixed bottom-4 left-1/2 transform -translate-x-1/2 min-w-[300px] max-w-[955px] flex items-center p-4 mb-4 text-sm {% if msg.tags == 'error' %}text-red-500 border-red-300 bg-red-50{% else %}text-green-500 border-green-300 bg-green-50{% endif %} border rounded-lg shadow-lg z-50" role="alert">
+                <svg class="flex-shrink-0 inline w-4 h-4 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    {% if msg.tags == 'error' %}
+                    <!-- Ikon untuk Gagal -->
+                    <path
+                        d="M10 0a10 10 0 1 0 10 10A10 10 0 0 0 10 0Zm1 14a1 1 0 1 1-2 0V8a1 1 0 1 1 2 0Zm-1-8a1.5 1.5 0 1 1-1.5 1.5A1.5 1.5 0 0 1 10 6Z" />
+                    {% else %}
+                    <!-- Ikon untuk Berhasil -->
+                    <path
+                        d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9 13.5 5.5 10l1.4-1.4L9 10.7l4.6-4.6L15 7l-6 6.5Z" />
+                    {% endif %}
+                </svg>
+                <div>
+                    <span class="font-medium">
+                        {% if msg.tags == 'error' %}Gagal!{% else %}Berhasil!{% endif %}
+                    </span> {{ msg }}
+                </div>
             </div>
             {% endfor %}
         </div>
@@ -113,9 +122,13 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label for="jenisAyam" class="block text-sm font-medium text-gray-700">Jenis</label>
-                            <input type="text" id="jenisAyam" name="jenisAyam"
+                            <select id="jenisAyam" name="jenisAyam"
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-3"
-                                placeholder="jenis" required />
+                                required>
+                                <option value="">Jenis</option>
+                                <option value="Petelur">Petelur</option>
+                                <option value="Pedaging">Pedaging</option>
+                            </select>
                         </div>
                         <div>
                             <label for="jumlah" class="block text-sm font-medium text-gray-700">Jumlah</label>
@@ -151,6 +164,20 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Menghilangkan pesan setelah 3 detik menggunakan jQuery
+        $(document).ready(function () {
+            $('[id^="alert-"]').each(function () {
+                const alert = $(this);
+                setTimeout(function () {
+                    alert.fadeOut(300, function () {
+                        alert.remove(); // Menghapus elemen setelah transisi selesai
+                    });
+                }, 3000); // Waktu tunggu 3 detik
+            });
+        });
+    </script>    
 </body>
 
 </html>
