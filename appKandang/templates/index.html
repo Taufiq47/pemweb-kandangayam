@@ -9,11 +9,11 @@
 </head>
 
 <body>
-    <div class="w-fit flex flex-row gap-4 p-8 rounded-lg m-auto">
+    <div class="w-fit min-h-screen flex flex-row gap-4 p-8 rounded-lg m-auto">
         <div class="flex flex-col gap-4 min-w-[700px]">
             <h1 class="text-xl font-bold text-gray-800 bg-gray-100 w-full text-center py-5 shadow-md rounded-lg">
                 Daftar Kandang</h1>
-            <div class="mt-2 text-gray-600 bg-white-100 min-h-[520px] rounded-lg shadow-md p-4 bg-gray-100">
+            <div class="mt-2 text-gray-600 bg-white-100 h-full rounded-lg shadow-md p-4 bg-gray-100">
                 <div class="grid grid-cols-3 gap-4 h-fit w-full">
                     {% for kandang in kandang_list %}
                     <div
@@ -24,13 +24,13 @@
                         <p class="text-gray-600">Kapasitas: {{ kandang.kapasitas }}</p>
                         <p class="text-gray-600 mb-4">Jumlah Ayam: {{ kandang.jumlah_ayam }}</p>
                         <div class="grid grid-cols-3 gap-4">
-                            <a href="{% url 'detail_kandang' kandang.id %}"
-                                class="bg-blue-500 text-white px-4 py-1 rounded-md hover:bg-blue-600 cursor-pointer transition duration-300">
-                                Detail
-                            </a>
                             <a href="{% url 'edit_kandang' kandang.id %}"
                                 class="bg-blue-500 text-white text-center px-4 py-1 rounded-md hover:bg-blue-600 cursor-pointer transition duration-300">
                                 Edit
+                            </a>
+                            <a href="{% url 'detail_kandang' kandang.id %}"
+                                class="bg-green-500 text-white text-center px-4 py-1 rounded-md hover:bg-green-600 cursor-pointer transition duration-300">
+                                Detail
                             </a>
                             <form action="{% url 'hapus_kandang' kandang.id %}" method="post" class="inline">
                                 {% csrf_token %}
@@ -70,7 +70,7 @@
             </div>
             {% endfor %}
         </div>
-        <div class="flex flex-col gap-4 justify-between w-[240px]">
+        <div class="flex flex-col gap-4 justify-between w-[240px] h-screen">
             <div class="h-full bg-gray-100 p-4 rounded-lg shadow-mdr">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4 text-center">
                     {% if kandang %}
