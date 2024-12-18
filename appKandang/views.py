@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
 from .models import KandangAyam
 from .models import Ayam
 
@@ -46,7 +47,8 @@ def tambah_edit_kandang(request, kandang_id=None):
         else:
             kandang = KandangAyam(nama_kandang=nama_kandang, kapasitas=kapasitas)
             kandang.save()
-
+        
+        messages.success(request, "Kandang ayam berhasil ditambahkan")
         return redirect('index')
 
     kandang_list = KandangAyam.objects.all()
